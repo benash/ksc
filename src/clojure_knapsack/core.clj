@@ -23,7 +23,32 @@
     {:max-weight (make-max-weight weight-line)
      :dolls (map make-doll doll-lines)}))
 
+(defn init-table [max-weight]
+  (zipmap (for [i (range (inc max-weight))] [0 i])
+          (repeat (inc max-weight) 0)))
+
+; Given the current table, fill in the cell at [i, j] and return the new map.
+; If the doll weighs more than we're considering, use the value from the last
+; doll. Otherwise, use either the val of last doll or the value from using the
+; current doll along with the best value we can get from the remaining weight.
+(defn fill-cell [weight-of value-of table [i j]]
+  (do
+  (assoc table [i j]
+         (if (< j (weight-of i))
+           (table [(dec i) j])
+           (max (table [(dec i) j])
+                (+ (value-of i)
+                   (table [(dec i) (- j (weight-of i))])))))))
+
 (defn build-knapsack-table [scenario]
-  (repeat (+ 1 (:max-weight scenario)) 0))
+  (let [max-weight (:max-weight scenario)
+        num-dolls (count (:dolls scenario))
+        table (init-table max-weight)
+        w (fn [i] (:weight (nth (:dolls scenario) (dec i))))
+        v (fn [i] (:value (nth (:dolls scenario) (dec i))))
+        partial-fill-cell (partial fill-cell w v)]
+    (reduce partial-fill-cell table (for [i (range 1 (inc num-dolls))
+                                               j (range (inc max-weight))]
+                                           [i j]))))
 
 ;(print-result (build-knapsack-table (parse-input file)))
