@@ -59,22 +59,30 @@
         solution (:solution scenario)
         doll (nth (:dolls scenario) (dec i))
         weight (:weight doll)]
-    (do (println i capacity)
-    (if (> (table [i capacity])
-           (table [(dec i) capacity]))
+    (if (<= (table [i capacity])
+            (table [(dec i) capacity]))
+      scenario
       (merge scenario {:capacity (- capacity weight)
-                       :solution (conj solution doll)})
-      scenario)))
-  )
+                       :solution (conj solution doll)}))))
 
 (defn find-dolls [scenario]
   (let [num-dolls (count (:dolls scenario))
         max-weight (:max-weight scenario)
         value-up-to (fn [i] ((:table scenario) [i max-weight]))]
-    (do (println ((:table scenario) [5 35]) ((:table scenario) [4 35]) )
-        (:solution (reduce check-doll (merge scenario {:capacity max-weight
-                                            :solution []})
-                (range num-dolls 0 -1))))
-))
-        ;(print-result (find-dolls (build-knapsack-table (parse-input file))))
+    (:solution (reduce check-doll (merge scenario {:capacity max-weight
+                                                   :solution []})
+                       (range num-dolls 0 -1)))))
+
+(defn print-doll [doll]
+  (println (:name doll) (:weight doll) (:value doll)))
+
+(defn solve [file]
+  (find-dolls (build-knapsack-table (parse-input file))))
+
+(defn print-result [solution]
+  (do
+    (println "packed dolls:")
+    (println "name weight value")
+    (doseq [doll solution]
+      (println (:name doll) (:weight doll) (:value doll)))))
 

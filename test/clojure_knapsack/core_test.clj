@@ -37,7 +37,17 @@
   (is (= 1030 ((:table (build-knapsack-table
                       (parse-input "resources/atomic-ex.txt"))) [22 400]))))
 
-(deftest find-dolls-test
-  (is (= 1030 (find-dolls (build-knapsack-table
-                      (parse-input "resources/atomic-ex.txt"))))))
-
+(deftest solve-test
+  (is (= [{:value 50, :weight 4, :name "sally"}
+          {:value 20, :weight 7, :name "eddie"}
+          {:value 80, :weight 22, :name "grumpy"}
+          {:value 75, :weight 43, :name "dusty"}
+          {:value 70, :weight 42, :name "grumpkin"}
+          {:value 70, :weight 11, :name "marc"}
+          {:value 60, :weight 27, :name "randal"}
+          {:value 60, :weight 15, :name "puppy"}
+          {:value 160, :weight 50, :name "dorothy"}
+          {:value 200, :weight 153, :name "candice"}
+          {:value 35, :weight 13, :name "anthony"}
+          {:value 150, :weight 9, :name "luke"}]
+         (solve "resources/atomic-ex.txt"))))
