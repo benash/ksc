@@ -32,23 +32,49 @@
 ; doll. Otherwise, use either the val of last doll or the value from using the
 ; current doll along with the best value we can get from the remaining weight.
 (defn fill-cell [weight-of value-of table [i j]]
-  (do
-  (assoc table [i j]
-         (if (< j (weight-of i))
-           (table [(dec i) j])
-           (max (table [(dec i) j])
-                (+ (value-of i)
-                   (table [(dec i) (- j (weight-of i))])))))))
+  (let
+    [last-doll-value (table [(dec i) j])]
+    (assoc table [i j]
+           (if (< j (weight-of i))
+             last-doll-value
+             (max last-doll-value
+                  (+ (value-of i)
+                     (table [(dec i) (- j (weight-of i))])))))))
 
 (defn build-knapsack-table [scenario]
   (let [max-weight (:max-weight scenario)
         num-dolls (count (:dolls scenario))
-        table (init-table max-weight)
+        init (init-table max-weight)
         w (fn [i] (:weight (nth (:dolls scenario) (dec i))))
         v (fn [i] (:value (nth (:dolls scenario) (dec i))))
-        partial-fill-cell (partial fill-cell w v)]
-    (reduce partial-fill-cell table (for [i (range 1 (inc num-dolls))
-                                               j (range (inc max-weight))]
-                                           [i j]))))
+        partial-fill-cell (partial fill-cell w v)
+        table (reduce partial-fill-cell init
+                      (for [i (range 1 (inc num-dolls))
+                            j (range (inc max-weight))] [i j]))]
+    (assoc scenario :table table)))
 
-;(print-result (build-knapsack-table (parse-input file)))
+(defn check-doll [scenario i]
+  (let [capacity (:capacity scenario)
+        table (:table scenario)
+        solution (:solution scenario)
+        doll (nth (:dolls scenario) (dec i))
+        weight (:weight doll)]
+    (do (println i capacity)
+    (if (> (table [i capacity])
+           (table [(dec i) capacity]))
+      (merge scenario {:capacity (- capacity weight)
+                       :solution (conj solution doll)})
+      scenario)))
+  )
+
+(defn find-dolls [scenario]
+  (let [num-dolls (count (:dolls scenario))
+        max-weight (:max-weight scenario)
+        value-up-to (fn [i] ((:table scenario) [i max-weight]))]
+    (do (println ((:table scenario) [5 35]) ((:table scenario) [4 35]) )
+        (:solution (reduce check-doll (merge scenario {:capacity max-weight
+                                            :solution []})
+                (range num-dolls 0 -1))))
+))
+        ;(print-result (find-dolls (build-knapsack-table (parse-input file))))
+

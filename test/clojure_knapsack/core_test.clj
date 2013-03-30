@@ -34,5 +34,10 @@
     (is (= {[0 1] 0 [0 0] 0 [0 2] 0} (init-table 2)))))
 
 (deftest build-knapsack-table-test
-  (is (= 1030 ((build-knapsack-table
-                      (parse-input "resources/atomic-ex.txt")) [22 400]))))
+  (is (= 1030 ((:table (build-knapsack-table
+                      (parse-input "resources/atomic-ex.txt"))) [22 400]))))
+
+(deftest find-dolls-test
+  (is (= 1030 (find-dolls (build-knapsack-table
+                      (parse-input "resources/atomic-ex.txt"))))))
+
