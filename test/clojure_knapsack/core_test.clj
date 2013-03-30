@@ -37,7 +37,7 @@
   (is (= 1030 ((:table (build-knapsack-table
                       (parse-input "resources/atomic-ex.txt"))) [22 400]))))
 
-(deftest solve-test
+(deftest solve-example-test
   (is (= [{:value 50, :weight 4, :name "sally"}
           {:value 20, :weight 7, :name "eddie"}
           {:value 80, :weight 22, :name "grumpy"}
@@ -51,3 +51,10 @@
           {:value 35, :weight 13, :name "anthony"}
           {:value 150, :weight 9, :name "luke"}]
          (solve "resources/atomic-ex.txt"))))
+
+(deftest solve-fsu-dataset
+  (is (= (map #(first %) (reverse (filter (fn [itm] (= (second itm) 1))
+                 (map-indexed (fn [idx itm] [idx itm])
+                              [1 0 1 0 1 0 1 1 1 0 0 0 0 1 1]))))
+         (map #(Integer/parseInt (:name %)) (solve "resources/15-ex.txt")))))
+
